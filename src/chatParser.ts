@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { RconResponse } from './rcon/types';
+import { RconResponse } from './types';
 
 export function chatParser(
   rconEmitter: EventEmitter,
