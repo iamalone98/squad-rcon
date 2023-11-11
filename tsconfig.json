@@ -9,11 +9,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "declaration": true
   },
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "src/types.ts"],
   "exclude": ["./node_modules"]
 }

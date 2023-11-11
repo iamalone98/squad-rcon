@@ -1,9 +1,9 @@
 import EventEmitter from 'events';
-import { RconResponse } from './types';
+import { TRconResponse } from '../types';
 
 export function chatParser(
   rconEmitter: EventEmitter,
-  { body }: RconResponse,
+  { body }: TRconResponse,
 ) {
   const matchChat = body.match(
     /\[(ChatAll|ChatTeam|ChatSquad|ChatAdmin)] \[SteamID:([0-9]{17})] (.+?) : (.*)/,

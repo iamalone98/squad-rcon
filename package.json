@@ -1,8 +1,9 @@
 {
-  "name": "SquadRcon",
+  "name": "squad-rcon",
   "version": "0.0.1",
   "main": "./dist/index.js",
-  "repository": "git@github.com:iamalone98/SquadRconServer.git",
+  "types": "./dist/index.d.ts",
+  "repository": "https://github.com/iamalone98/squad-rcon.git",
   "author": "I-Am Alone <iamalone9828@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -11,13 +12,13 @@
     "build": "tsc",
     "serve": "node dist/index.js",
     "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "format": "eslint src/**/*.ts --fix",
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
-    "dotenv": "^16.3.1",
     "eslint": "^8.52.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",

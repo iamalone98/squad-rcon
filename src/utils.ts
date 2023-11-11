@@ -1,10 +1,6 @@
-import { RconResponse } from './types';
+import { TRconResponse } from './types';
 
-export const encode = (
-  type: number,
-  id: number,
-  body: string,
-) => {
+export const encode = (type: number, id: number, body: string) => {
   const size = Buffer.byteLength(body) + 14;
   const buf = Buffer.alloc(size);
 
@@ -17,7 +13,7 @@ export const encode = (
   return buf;
 };
 
-export const decode = (buffer: Buffer): RconResponse => {
+export const decode = (buffer: Buffer): TRconResponse => {
   const response = {
     size: buffer.readInt32LE(0),
     id: buffer.readInt32LE(4),
