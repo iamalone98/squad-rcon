@@ -99,7 +99,7 @@ Rcon({
 | Event           | Return       | Type            |
 | --------------- | ------------ | --------------- |
 | **ListPlayers** | **response** | `TRconResponse` |
-| **ListSquads**  | **response** | `TListSquads`   |
+| **ListSquads**  | **response** | `TRconResponse` |
 | **data**        | **response** | `TRconResponse` |
 | **error**       | **error**    | `unknown`       |
 | **connected**   |              |                 |
