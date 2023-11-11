@@ -96,12 +96,19 @@ Rcon({
 
 #### Events Emitter
 
-| Event           | Return       | Type            |
-| --------------- | ------------ | --------------- |
-| **ListPlayers** | **response** | `TRconResponse` |
-| **ListSquads**  | **response** | `TRconResponse` |
-| **data**        | **response** | `TRconResponse` |
-| **error**       | **error**    | `unknown`       |
-| **connected**   |              |                 |
-| **close**       |              |                 |
-| **end**         |              |                 |
+| Event                        | Return       | Type                      |
+| ---------------------------- | ------------ | ------------------------- |
+| **ListPlayers**              | **response** | `TRconResponse`           |
+| **ListSquads**               | **response** | `TRconResponse`           |
+| **CHAT_MESSAGE**             | **response** | `TChatMessage`            |
+| **POSSESSED_ADMIN_CAMERA**   | **response** | `TPossessedAdminCamera`   |
+| **UNPOSSESSED_ADMIN_CAMERA** | **response** | `TUnPossessedAdminCamera` |
+| **PLAYER_WARNED**            | **response** | `TPlayerWarned`           |
+| **PLAYER_KICKED**            | **response** | `TPlayerKicked`           |
+| **SQUAD_CREATED**            | **response** | `TSquadCreated`           |
+| **PLAYER_BANNED**            | **response** | `TPlayerBanned`           |
+| **data**                     | **response** | `TRconResponse`           |
+| **error**                    | **error**    | `unknown`                 |
+| **connected**                |              |                           |
+| **close**                    |              |                           |
+| **end**                      |              |                           |

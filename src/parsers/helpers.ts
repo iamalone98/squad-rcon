@@ -16,7 +16,7 @@ const getListPlayers = (
     players.push({
       playerID: match[1],
       steamID: match[2],
-      name: match[3],
+      playerName: match[3],
       teamID: match[4],
       squadID: match[5] !== 'N/A' ? match[5] : null,
       isLeader: match[6] === 'True',
