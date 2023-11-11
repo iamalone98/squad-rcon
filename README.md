@@ -28,25 +28,25 @@ $ yarn add squad-rcon
 
 There are two ways to use the library. This can be done with Promises or EventEmitter, and you can combine them.
 
-### EventEmmiter
+### EventEmmiter(ts)
 
-```typescript(ts)
-import {Rcon, TRconResponse} from 'squad-rcon'
+```typescript
+import { Rcon, TRconResponse } from 'squad-rcon';
 
-const {rconEmitter, execute} = Rcon({
-    host: '127.0.0.1',
-    port: 1111,
-    password: 'qwerty',
+const { rconEmitter, execute } = Rcon({
+  host: '127.0.0.1',
+  port: 1111,
+  password: 'qwerty',
 });
 
 rconEmitter.on('connected', () => {
-    console.log('connect')
-    execute('ListPlayers')
-})
+  console.log('connect');
+  execute('ListPlayers');
+});
 
 rconEmitter.on('data', (data: TRconResponse) => {
-    console.log(data)
-})
+  console.log(data);
+});
 ```
 
 ### Promise(ts)
