@@ -30,26 +30,26 @@ There are two ways to use the library. This can be done with Promises or EventEm
 
 ### EventEmmiter
 
-```typescript
-import { Rcon, TRconResponse } from 'squad-rcon';
+```typescript(ts)
+import {Rcon, TRconResponse} from 'squad-rcon'
 
-const { rconEmitter, execute } = Rcon({
-  host: '127.0.0.1',
-  port: 1111,
-  password: 'qwerty',
+const {rconEmitter, execute} = Rcon({
+    host: '127.0.0.1',
+    port: 1111,
+    password: 'qwerty',
 });
 
 rconEmitter.on('connected', () => {
-  console.log('connect');
-  execute('ListPlayers');
-});
+    console.log('connect')
+    execute('ListPlayers')
+})
 
 rconEmitter.on('data', (data: TRconResponse) => {
-  console.log(data);
-});
+    console.log(data)
+})
 ```
 
-### Promise
+### Promise(ts)
 
 ```typescript
 import { RconPromise } from 'squad-rcon';
@@ -69,3 +69,39 @@ import { RconPromise } from 'squad-rcon';
   }
 })();
 ```
+
+## API
+
+#### Initialization
+
+```typescript
+import { Rcon } from 'squad-rcon';
+
+Rcon({
+  host: '127.0.0.1',
+  port: 1111,
+  password: 'qwerty',
+});
+```
+
+`Rcon` and `RconPromise` return some pre-defined functions:
+
+#### Functions
+
+| Function           | Return      | Type                     | Emitter             |
+| ------------------ | ----------- | ------------------------ | ------------------- |
+| **execute**        | **Promise** | `Promise<TRconResponse>` | `on('data')`        |
+| **getListPlayers** | **Promise** | `TListPlayers`           | `on('ListPlayers')` |
+| **getListSquads**  | **Promise** | `TListSquads`            | `on('ListSquads')`  |
+
+#### Events Emitter
+
+| Event           | Return       | Type            |
+| --------------- | ------------ | --------------- |
+| **ListPlayers** | **response** | `TRconResponse` |
+| **ListSquads**  | **response** | `TListSquads`   |
+| **data**        | **response** | `TRconResponse` |
+| **error**       | **error**    | `unknown`       |
+| **connected**   |              |                 |
+| **close**       |              |                 |
+| **end**         |              |                 |
