@@ -39,6 +39,6 @@ export const RconPromise = async (
       });
     }
 
-    throw Error('Connection close');
+    return Promise.reject('Connection close');
   }
 };
