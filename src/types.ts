@@ -3,6 +3,9 @@ export type TOptions = {
   port: number;
   password: string;
   pingDelay?: number;
+  autoReconnect?: boolean;
+  autoReconnectDelay?: number;
+  logEnabled?: boolean;
 };
 
 export type TRconResponse = {
@@ -97,4 +100,10 @@ export enum ERconResponseType {
   SERVERDATA_COMMAND = 0x02,
   SERVERDATA_SERVER = 0x01,
   SERVERDATA_RESPONSE = 0x00,
+}
+
+export enum ELoggerType {
+  SUCCESS = 0,
+  WARN = 1,
+  ERROR = 2,
 }

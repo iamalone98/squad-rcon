@@ -81,6 +81,10 @@ Rcon({
   host: '127.0.0.1',
   port: 1111,
   password: 'qwerty',
+  pingDelay: 60000, // optional
+  autoReconnect: true, // optional
+  autoReconnectDelay: 1000, // optional
+  logEnabled: true, // optional
 });
 ```
 
@@ -90,6 +94,7 @@ Rcon({
 
 | Function           | Return      | Type                     | Emitter             |
 | ------------------ | ----------- | ------------------------ | ------------------- |
+| **rconEmitter**    | **Emitter** | `EventEmitter`           | `on()`              |
 | **execute**        | **Promise** | `Promise<TRconResponse>` | `on('data')`        |
 | **getListPlayers** | **Promise** | `TListPlayers`           | `on('ListPlayers')` |
 | **getListSquads**  | **Promise** | `TListSquads`            | `on('ListSquads')`  |
@@ -108,7 +113,6 @@ Rcon({
 | **SQUAD_CREATED**            | **response** | `TSquadCreated`           |
 | **PLAYER_BANNED**            | **response** | `TPlayerBanned`           |
 | **data**                     | **response** | `TRconResponse`           |
-| **error**                    | **error**    | `unknown`                 |
+| **err**                      | **error**    | `Error`                   |
 | **connected**                |              |                           |
 | **close**                    |              |                           |
-| **end**                      |              |                           |
