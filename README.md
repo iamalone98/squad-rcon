@@ -92,12 +92,13 @@ Rcon({
 
 #### Functions
 
-| Function           | Return      | Type                     | Emitter             |
-| ------------------ | ----------- | ------------------------ | ------------------- |
-| **rconEmitter**    | **Emitter** | `EventEmitter`           | `on()`              |
-| **execute**        | **Promise** | `Promise<TRconResponse>` | `on('data')`        |
-| **getListPlayers** | **Promise** | `TListPlayers`           | `on('ListPlayers')` |
-| **getListSquads**  | **Promise** | `TListSquads`            | `on('ListSquads')`  |
+| Function           | Return         | Type                     | Emitter             |
+| ------------------ | -------------- | ------------------------ | ------------------- |
+| **client**         | **net.Socket** | `net.Socket`             |                     |
+| **rconEmitter**    | **Emitter**    | `EventEmitter`           | `on()`              |
+| **execute**        | **Promise**    | `Promise<TRconResponse>` | `on('data')`        |
+| **getListPlayers** | **Promise**    | `TListPlayers`           | `on('ListPlayers')` |
+| **getListSquads**  | **Promise**    | `TListSquads`            | `on('ListSquads')`  |
 
 #### Events Emitter
 

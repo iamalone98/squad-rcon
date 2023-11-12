@@ -16,7 +16,7 @@ const EMPTY_PACKET_ID = 100;
 const AUTH_PACKET_ID = 101;
 const PING_PACKET_ID = 102;
 
-export const Rcon = (options: TOptions) => {
+export const Rcon = (options: TOptions, _isPromise?: boolean) => {
   const {
     host,
     port,
@@ -84,7 +84,7 @@ export const Rcon = (options: TOptions) => {
   const reconnect = () => {
     connected = false;
 
-    if (autoReconnect && !connected) {
+    if (autoReconnect && !connected && !_isPromise) {
       setTimeout(() => {
         client.end();
         logger('Reconnecting');
@@ -216,5 +216,6 @@ export const Rcon = (options: TOptions) => {
     execute,
     getListPlayers,
     getListSquads,
+    client,
   };
 };
