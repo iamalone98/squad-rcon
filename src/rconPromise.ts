@@ -7,9 +7,10 @@ const promise = (
   const { rconEmitter, client, ...rest } = Rcon(options, true);
 
   return new Promise((resolve, reject) => {
-    rconEmitter.once('connected', () =>
-      resolve({ rconEmitter, client, ...rest }),
-    );
+    rconEmitter.once('connected', () => {
+      resolve({ rconEmitter, client, ...rest });
+      setTimeout(() => rconEmitter.emit('connected'), 0);
+    });
 
     rconEmitter.once('close', () => {
       client.end();

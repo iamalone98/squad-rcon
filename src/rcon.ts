@@ -121,6 +121,8 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
         {
           if (decodedData.id === PING_PACKET_ID) return;
 
+          rconEmitter.emit('data', decodedData);
+
           if (decodedData.id === EMPTY_PACKET_ID) {
             if (lastDataBuffer.byteLength >= 1) {
               const lastDataDecoded = decode(lastDataBuffer);
