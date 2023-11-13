@@ -36,7 +36,7 @@ export const RconPromise = async (
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(RconPromise(options));
-        }, options.autoReconnectDelay || 10000);
+        }, options.autoReconnectDelay || 60000);
       });
     }
 

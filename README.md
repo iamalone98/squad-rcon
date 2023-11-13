@@ -83,8 +83,17 @@ Rcon({
   password: 'qwerty',
   pingDelay: 60000, // optional
   autoReconnect: true, // optional
-  autoReconnectDelay: 1000, // optional
+  autoReconnectDelay: 60000, // optional
   logEnabled: true, // optional
+  chatListeners: {
+    onChatMessage: (data: TChatMessage) => null, // optional
+    onPlayerWarned: (data: TPlayerWarned) => null, // optional
+    onPlayerKicked: (data: TPlayerKicked) => null, // optional
+    onPlayerBanned: (data: TPlayerBanned) => null, // optional
+    onSquadCreated: (data: TSquadCreated) => null, // optional
+    onPossessedAdminCamera: (data: TPossessedAdminCamera) => null, // optional
+    onUnPossessedAdminCamera: (data: TUnPossessedAdminCamera) => null, // optional
+  }, // optional
 });
 ```
 

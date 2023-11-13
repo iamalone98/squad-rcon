@@ -1,23 +1,29 @@
 import EventEmitter from 'events';
-import { TRconResponse } from '../types';
+import { TChatListeners, TRconResponse } from '../types';
 
 export function chatParser(
   rconEmitter: EventEmitter,
-  { body }: TRconResponse,
+  packet: TRconResponse,
+  listeners?: TChatListeners,
 ) {
+  const { body } = packet;
+
   const matchChat = body.match(
     /\[(ChatAll|ChatTeam|ChatSquad|ChatAdmin)] \[SteamID:([0-9]{17})] (.+?) : (.*)/,
   );
 
   if (matchChat) {
-    rconEmitter.emit('CHAT_MESSAGE', {
+    const data = {
       raw: body,
       chat: matchChat[1],
       steamID: matchChat[2],
       playerName: matchChat[3],
       message: matchChat[4],
       time: new Date(),
-    });
+    };
+
+    rconEmitter.emit('CHAT_MESSAGE', data);
+    listeners?.onChatMessage?.(data);
 
     return;
   }
@@ -27,12 +33,15 @@ export function chatParser(
   );
 
   if (matchPossessedAdminCam) {
-    rconEmitter.emit('POSSESSED_ADMIN_CAMERA', {
+    const data = {
       raw: body,
       steamID: matchPossessedAdminCam[1],
       playerName: matchPossessedAdminCam[2],
       time: new Date(),
-    });
+    };
+
+    rconEmitter.emit('POSSESSED_ADMIN_CAMERA', data);
+    listeners?.onPossessedAdminCamera?.(data);
 
     return;
   }
@@ -42,12 +51,15 @@ export function chatParser(
   );
 
   if (matchUnpossessedAdminCam) {
-    rconEmitter.emit('UNPOSSESSED_ADMIN_CAMERA', {
+    const data = {
       raw: body,
       steamID: matchUnpossessedAdminCam[1],
       playerName: matchUnpossessedAdminCam[2],
       time: new Date(),
-    });
+    };
+
+    rconEmitter.emit('UNPOSSESSED_ADMIN_CAMERA', data);
+    listeners?.onUnPossessedAdminCamera?.(data);
 
     return;
   }
@@ -57,12 +69,15 @@ export function chatParser(
   );
 
   if (matchWarn) {
-    rconEmitter.emit('PLAYER_WARNED', {
+    const data = {
       raw: body,
       playerName: matchWarn[1],
       reason: matchWarn[2],
       time: new Date(),
-    });
+    };
+
+    rconEmitter.emit('PLAYER_WARNED', data);
+    listeners?.onPlayerWarned?.(data);
 
     return;
   }
@@ -72,31 +87,16 @@ export function chatParser(
   );
 
   if (matchKick) {
-    rconEmitter.emit('PLAYER_KICKED', {
+    const data = {
       raw: body,
       playerID: matchKick[1],
       steamID: matchKick[2],
       playerName: matchKick[3],
       time: new Date(),
-    });
+    };
 
-    return;
-  }
-
-  const matchSqCreated = body.match(
-    /(.+) \(Steam ID: ([0-9]{17})\) has created Squad (\d+) \(Squad Name: (.+)\) on (.+)/,
-  );
-
-  if (matchSqCreated) {
-    rconEmitter.emit('SQUAD_CREATED', {
-      raw: body,
-      playerName: matchSqCreated[1],
-      steamID: matchSqCreated[2],
-      squadID: matchSqCreated[3],
-      squadName: matchSqCreated[4],
-      teamName: matchSqCreated[5],
-      time: new Date(),
-    });
+    rconEmitter.emit('PLAYER_KICKED', data);
+    listeners?.onPlayerKicked?.(data);
 
     return;
   }
@@ -106,13 +106,39 @@ export function chatParser(
   );
 
   if (matchBan) {
-    rconEmitter.emit('PLAYER_BANNED', {
+    const data = {
       raw: body,
       playerID: matchBan[1],
       steamID: matchBan[2],
       playerName: matchBan[3],
       interval: matchBan[4],
       time: new Date(),
-    });
+    };
+
+    rconEmitter.emit('PLAYER_BANNED', data);
+    listeners?.onPlayerBanned?.(data);
+
+    return;
+  }
+
+  const matchSqCreated = body.match(
+    /(.+) \(Steam ID: ([0-9]{17})\) has created Squad (\d+) \(Squad Name: (.+)\) on (.+)/,
+  );
+
+  if (matchSqCreated) {
+    const data = {
+      raw: body,
+      playerName: matchSqCreated[1],
+      steamID: matchSqCreated[2],
+      squadID: matchSqCreated[3],
+      squadName: matchSqCreated[4],
+      teamName: matchSqCreated[5],
+      time: new Date(),
+    };
+
+    rconEmitter.emit('SQUAD_CREATED', data);
+    listeners?.onSquadCreated?.(data);
+
+    return;
   }
 }

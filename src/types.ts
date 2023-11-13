@@ -6,6 +6,17 @@ export type TOptions = {
   autoReconnect?: boolean;
   autoReconnectDelay?: number;
   logEnabled?: boolean;
+  chatListeners?: TChatListeners;
+};
+
+export type TChatListeners = {
+  onChatMessage?: (data: TChatMessage) => void;
+  onPlayerWarned?: (data: TPlayerWarned) => void;
+  onPlayerKicked?: (data: TPlayerKicked) => void;
+  onPlayerBanned?: (data: TPlayerBanned) => void;
+  onSquadCreated?: (data: TSquadCreated) => void;
+  onPossessedAdminCamera?: (data: TPossessedAdminCamera) => void;
+  onUnPossessedAdminCamera?: (data: TUnPossessedAdminCamera) => void;
 };
 
 export type TRconResponse = {
@@ -42,28 +53,28 @@ export type TChatMessage = {
   steamID: string;
   playerName: string;
   message: string;
-  time: string;
+  time: Date;
 };
 
 export type TPossessedAdminCamera = {
   raw: string;
   steamID: string;
   playerName: string;
-  time: string;
+  time: Date;
 };
 
 export type TUnPossessedAdminCamera = {
   raw: string;
   steamID: string;
   playerName: string;
-  time: string;
+  time: Date;
 };
 
 export type TPlayerWarned = {
   raw: string;
   reason: string;
   playerName: string;
-  time: string;
+  time: Date;
 };
 
 export type TPlayerKicked = {
@@ -71,7 +82,7 @@ export type TPlayerKicked = {
   playerID: string;
   steamID: string;
   playerName: string;
-  time: string;
+  time: Date;
 };
 
 export type TSquadCreated = {
@@ -81,7 +92,7 @@ export type TSquadCreated = {
   squadID: string;
   squadName: string;
   teamName: string;
-  time: string;
+  time: Date;
 };
 
 export type TPlayerBanned = {
@@ -90,7 +101,7 @@ export type TPlayerBanned = {
   steamID: string;
   playerName: string;
   interval: string;
-  time: string;
+  time: Date;
 };
 
 export type TResponseTaskQueue = (response: TRconResponse) => void;

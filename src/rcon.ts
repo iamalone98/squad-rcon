@@ -25,6 +25,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
     autoReconnect = true,
     autoReconnectDelay = 10000,
     logEnabled,
+    chatListeners,
   } = options;
 
   CONFIG.logEnabled =
@@ -113,7 +114,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
 
       case ERconResponseType.SERVERDATA_SERVER:
         {
-          chatParser(rconEmitter, decodedData);
+          chatParser(rconEmitter, decodedData, chatListeners);
           rconEmitter.emit('data', decodedData);
         }
         break;
