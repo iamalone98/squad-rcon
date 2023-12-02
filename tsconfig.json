@@ -4,12 +4,13 @@
     "module": "ES6",
     "moduleResolution": "node",
     "baseUrl": "./src/index.ts",
-    "outDir": "./dist",
+    "outDir": "./lib",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true
+    "declaration": true,
+    "declarationDir": "./lib/types"
   },
   "ts-node": {
     "esm": true,

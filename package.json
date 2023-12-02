@@ -1,16 +1,16 @@
 {
   "name": "squad-rcon",
-  "version": "1.0.10",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "version": "1.0.11",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/iamalone98/squad-rcon.git",
   "author": "I-Am Alone <iamalone9828@gmail.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "build": "tsc && yarn fix-esm-import-path dist",
-    "serve": "node dist/index.js",
+    "build": "tsc && yarn fix-esm-import-path lib/*.js && rollup -c rollup.config.js",
+    "serve": "node lib/index.js",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
@@ -26,6 +26,7 @@
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "prettier-plugin-organize-imports": "^3.2.3",
+    "rollup-plugin-dts": "^6.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
