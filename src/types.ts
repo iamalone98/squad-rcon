@@ -28,6 +28,7 @@ export type TRconResponse = {
 
 export type TListPlayer = {
   playerID: string;
+  eosID: string;
   steamID: string;
   playerName: string;
   teamID: string;
@@ -42,6 +43,7 @@ export type TListSquad = {
   size: string;
   locked: string;
   creatorName: string;
+  creatorEOSID: string;
   creatorSteamID: string;
   teamID: string | null;
   teamName: string | null;
@@ -50,6 +52,7 @@ export type TListSquad = {
 export type TChatMessage = {
   raw: string;
   chat: string;
+  eosID: string;
   steamID: string;
   playerName: string;
   message: string;
@@ -58,6 +61,7 @@ export type TChatMessage = {
 
 export type TPossessedAdminCamera = {
   raw: string;
+  eosID: string;
   steamID: string;
   playerName: string;
   time: Date;
@@ -65,6 +69,7 @@ export type TPossessedAdminCamera = {
 
 export type TUnPossessedAdminCamera = {
   raw: string;
+  eosID: string;
   steamID: string;
   playerName: string;
   time: Date;
@@ -80,6 +85,7 @@ export type TPlayerWarned = {
 export type TPlayerKicked = {
   raw: string;
   playerID: string;
+  eosID: string;
   steamID: string;
   playerName: string;
   time: Date;
@@ -88,6 +94,7 @@ export type TPlayerKicked = {
 export type TSquadCreated = {
   raw: string;
   playerName: string;
+  eosID: string;
   steamID: string;
   squadID: string;
   squadName: string;

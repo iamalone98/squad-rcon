@@ -103,7 +103,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
       case ERconResponseType.SERVERDATA_COMMAND:
         {
           if (decodedData.id === AUTH_PACKET_ID) {
-            logger('Connection successful');
+            logger('Authorization successful');
             onConnected();
           } else if (decodedData.id === -1) {
             logger('Authorization failed', ELoggerType.ERROR);

@@ -1,5 +1,15 @@
 import EventEmitter from 'events';
-import { TChatListeners, TRconResponse } from '../types';
+import {
+  TChatListeners,
+  TChatMessage,
+  TPlayerBanned,
+  TPlayerKicked,
+  TPlayerWarned,
+  TPossessedAdminCamera,
+  TRconResponse,
+  TSquadCreated,
+  TUnPossessedAdminCamera,
+} from '../types';
 
 export function chatParser(
   rconEmitter: EventEmitter,
@@ -9,16 +19,17 @@ export function chatParser(
   const { body } = packet;
 
   const matchChat = body.match(
-    /\[(ChatAll|ChatTeam|ChatSquad|ChatAdmin)] \[SteamID:([0-9]{17})] (.+?) : (.*)/,
+    /\[(ChatAll|ChatTeam|ChatSquad|ChatAdmin)] \[Online IDs:EOS: ([0-9a-f]{32}) steam: (\d{17})\] (.+?) : (.*)/,
   );
 
   if (matchChat) {
-    const data = {
+    const data: TChatMessage = {
       raw: body,
       chat: matchChat[1],
-      steamID: matchChat[2],
-      playerName: matchChat[3],
-      message: matchChat[4],
+      eosID: matchChat[2],
+      steamID: matchChat[3],
+      playerName: matchChat[4],
+      message: matchChat[5],
       time: new Date(),
     };
 
@@ -29,14 +40,15 @@ export function chatParser(
   }
 
   const matchPossessedAdminCam = body.match(
-    /\[SteamID:([0-9]{17})] (.+?) has possessed admin camera./,
+    /\[Online Ids:EOS: ([0-9a-f]{32}) steam: (\d{17})\] (.+) has possessed admin camera\./,
   );
 
   if (matchPossessedAdminCam) {
-    const data = {
+    const data: TPossessedAdminCamera = {
       raw: body,
-      steamID: matchPossessedAdminCam[1],
-      playerName: matchPossessedAdminCam[2],
+      eosID: matchPossessedAdminCam[1],
+      steamID: matchPossessedAdminCam[2],
+      playerName: matchPossessedAdminCam[3],
       time: new Date(),
     };
 
@@ -47,14 +59,15 @@ export function chatParser(
   }
 
   const matchUnpossessedAdminCam = body.match(
-    /\[SteamID:([0-9]{17})] (.+?) has unpossessed admin camera./,
+    /\[Online IDs:EOS: ([0-9a-f]{32}) steam: (\d{17})\] (.+) has unpossessed admin camera\./,
   );
 
   if (matchUnpossessedAdminCam) {
-    const data = {
+    const data: TUnPossessedAdminCamera = {
       raw: body,
-      steamID: matchUnpossessedAdminCam[1],
-      playerName: matchUnpossessedAdminCam[2],
+      eosID: matchUnpossessedAdminCam[1],
+      steamID: matchUnpossessedAdminCam[2],
+      playerName: matchUnpossessedAdminCam[3],
       time: new Date(),
     };
 
@@ -69,7 +82,7 @@ export function chatParser(
   );
 
   if (matchWarn) {
-    const data = {
+    const data: TPlayerWarned = {
       raw: body,
       playerName: matchWarn[1],
       reason: matchWarn[2],
@@ -83,15 +96,16 @@ export function chatParser(
   }
 
   const matchKick = body.match(
-    /Kicked player ([0-9]+)\. \[steamid=([0-9]{17})] (.*)/,
+    /Kicked player ([0-9]+)\. \[Online IDs= EOS: ([0-9a-f]{32}) steam: (\d{17})] (.*)/,
   );
 
   if (matchKick) {
-    const data = {
+    const data: TPlayerKicked = {
       raw: body,
       playerID: matchKick[1],
-      steamID: matchKick[2],
-      playerName: matchKick[3],
+      eosID: matchKick[2],
+      steamID: matchKick[3],
+      playerName: matchKick[4],
       time: new Date(),
     };
 
@@ -106,7 +120,7 @@ export function chatParser(
   );
 
   if (matchBan) {
-    const data = {
+    const data: TPlayerBanned = {
       raw: body,
       playerID: matchBan[1],
       steamID: matchBan[2],
@@ -122,17 +136,18 @@ export function chatParser(
   }
 
   const matchSqCreated = body.match(
-    /(.+) \(Steam ID: ([0-9]{17})\) has created Squad (\d+) \(Squad Name: (.+)\) on (.+)/,
+    /(.+) \(Online IDs: EOS: ([0-9a-f]{32}) steam: (\d{17})\) has created Squad (\d+) \(Squad Name: (.+)\) on (.+)/,
   );
 
   if (matchSqCreated) {
-    const data = {
+    const data: TSquadCreated = {
       raw: body,
       playerName: matchSqCreated[1],
-      steamID: matchSqCreated[2],
-      squadID: matchSqCreated[3],
-      squadName: matchSqCreated[4],
-      teamName: matchSqCreated[5],
+      eosID: matchSqCreated[2],
+      steamID: matchSqCreated[3],
+      squadID: matchSqCreated[4],
+      squadName: matchSqCreated[5],
+      teamName: matchSqCreated[6],
       time: new Date(),
     };
 
