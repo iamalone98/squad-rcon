@@ -114,8 +114,30 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
 
       case ERconResponseType.SERVERDATA_SERVER:
         {
-          chatParser(rconEmitter, decodedData, chatListeners);
-          rconEmitter.emit('data', decodedData);
+          if (decodedData.body.includes('\x00')) {
+            onData(
+              encode(
+                ERconResponseType.SERVERDATA_SERVER,
+                0,
+                decodedData.body.slice(
+                  0,
+                  decodedData.body.indexOf('\x00'),
+                ),
+              ),
+            );
+            onData(
+              encode(
+                ERconResponseType.SERVERDATA_SERVER,
+                0,
+                decodedData.body.slice(
+                  decodedData.body.lastIndexOf('\x00') + 1,
+                ),
+              ),
+            );
+          } else {
+            chatParser(rconEmitter, decodedData, chatListeners);
+            rconEmitter.emit('data', decodedData);
+          }
         }
         break;
       default:
