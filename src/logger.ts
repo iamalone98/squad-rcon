@@ -6,10 +6,12 @@ export const logger = {
     CONFIG.logEnabled &&
       console.log(chalk.yellow('[SquadRcon]'), chalk.green(text));
   },
+
   warn: (...text: string[]) => {
     CONFIG.logEnabled &&
       console.log(chalk.yellow('[SquadRcon]'), chalk.magenta(text));
   },
+
   error: (...text: string[]) => {
     CONFIG.logEnabled &&
       console.log(chalk.yellow('[SquadRcon]'), chalk.red(text));
