@@ -1,3 +1,2 @@
-export { Rcon } from './rcon/rcon';
-export { RconPromise } from './rcon/rconPromise';
+export { Rcon, RconPromise } from './rcon';
 export * from './types';

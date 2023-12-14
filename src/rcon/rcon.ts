@@ -8,7 +8,7 @@ import {
   TRconResponse,
   TResponseTaskQueue,
 } from '../types';
-import { chatParser, commandParser, helpers } from './parsers/index';
+import { chatParser, commandParser, helpers } from './parsers';
 import { decode, encode } from './utils';
 
 const EMPTY_PACKET_ID = 100;
