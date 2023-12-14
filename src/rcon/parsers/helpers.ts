@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { TListPlayer, TListSquad, TRconResponse } from '../types';
+import { TListPlayer, TListSquad, TRconResponse } from '../../types';
 
 const getListPlayers = (
   rconEmitter: EventEmitter,

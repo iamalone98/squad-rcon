@@ -1,22 +1,21 @@
 import EventEmitter from 'events';
 import net from 'net';
-import { CONFIG } from './config';
-import { logger } from './logger';
-import { chatParser, commandParser, helpers } from './parsers/index';
+import { CONFIG } from '../config';
+import { logger } from '../logger';
 import {
-  ELoggerType,
   ERconResponseType,
-  TOptions,
+  TRconOptions,
   TRconResponse,
   TResponseTaskQueue,
-} from './types';
+} from '../types';
+import { chatParser, commandParser, helpers } from './parsers/index';
 import { decode, encode } from './utils';
 
 const EMPTY_PACKET_ID = 100;
 const AUTH_PACKET_ID = 101;
 const PING_PACKET_ID = 102;
 
-export const Rcon = (options: TOptions, _isPromise?: boolean) => {
+export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
   const {
     host,
     port,
@@ -40,7 +39,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
     noDelay: true,
   });
 
-  logger('Connecting');
+  logger.log('Connecting');
 
   let commandId = 0;
   let lastDataBuffer = Buffer.alloc(0);
@@ -48,7 +47,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
   let timerPing: NodeJS.Timeout;
 
   const onAuth = () => {
-    logger('Authorization in progress');
+    logger.log('Authorization in progress');
 
     client.write(
       encode(
@@ -72,14 +71,14 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
 
   const onCloseConnection = () => {
     rconEmitter.emit('close');
-    logger('Connection close', ELoggerType.ERROR);
+    logger.error('Connection close');
 
     reconnect();
   };
 
   const onErrorConnection = (error?: Error) => {
     rconEmitter.emit('err', error);
-    logger('Connection error', ELoggerType.ERROR);
+    logger.error('Connection error');
   };
 
   const reconnect = () => {
@@ -88,7 +87,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
     if (autoReconnect && !connected && !_isPromise) {
       setTimeout(() => {
         client.end();
-        logger('Reconnecting');
+        logger.log('Reconnecting');
         Rcon(options);
       }, autoReconnectDelay);
     }
@@ -103,10 +102,10 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
       case ERconResponseType.SERVERDATA_COMMAND:
         {
           if (decodedData.id === AUTH_PACKET_ID) {
-            logger('Authorization successful');
+            logger.log('Authorization successful');
             onConnected();
           } else if (decodedData.id === -1) {
-            logger('Authorization failed', ELoggerType.ERROR);
+            logger.error('Authorization failed');
             reconnect();
           }
         }
@@ -204,7 +203,7 @@ export const Rcon = (options: TOptions, _isPromise?: boolean) => {
   };
 
   const ping = () => {
-    logger('Ping connection');
+    logger.log('Ping connection');
 
     client.write(
       encode(

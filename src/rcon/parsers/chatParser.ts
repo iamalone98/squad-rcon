@@ -9,7 +9,7 @@ import {
   TRconResponse,
   TSquadCreated,
   TUnPossessedAdminCamera,
-} from '../types';
+} from '../../types';
 
 export function chatParser(
   rconEmitter: EventEmitter,

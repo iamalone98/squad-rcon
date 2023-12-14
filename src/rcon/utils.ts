@@ -1,4 +1,4 @@
-import { TRconResponse } from './types';
+import { TRconResponse } from '../types';
 
 export const encode = (type: number, id: number, body: string) => {
   const size = Buffer.byteLength(body) + 14;

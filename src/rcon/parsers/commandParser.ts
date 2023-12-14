@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { TRconResponse } from '../types';
+import { TRconResponse } from '../../types';
 import { helpers } from './helpers';
 
 export const commandParser = (

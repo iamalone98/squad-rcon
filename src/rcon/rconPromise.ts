@@ -1,8 +1,8 @@
+import { TRconOptions } from '../types';
 import { Rcon } from './rcon';
-import { TOptions } from './types';
 
 const promise = (
-  options: TOptions,
+  options: TRconOptions,
 ): Promise<ReturnType<typeof Rcon>> => {
   const { rconEmitter, client, ...rest } = Rcon(options, true);
 
@@ -24,7 +24,7 @@ const promise = (
 };
 
 export const RconPromise = async (
-  options: TOptions,
+  options: TRconOptions,
 ): Promise<ReturnType<typeof Rcon>> => {
   try {
     return await promise(options);

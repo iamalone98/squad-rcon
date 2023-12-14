@@ -1,4 +1,4 @@
-export type TOptions = {
+export type TRconOptions = {
   host: string;
   port: number;
   password: string;
@@ -118,10 +118,4 @@ export enum ERconResponseType {
   SERVERDATA_COMMAND = 0x02,
   SERVERDATA_SERVER = 0x01,
   SERVERDATA_RESPONSE = 0x00,
-}
-
-export enum ELoggerType {
-  SUCCESS = 0,
-  WARN = 1,
-  ERROR = 2,
 }
