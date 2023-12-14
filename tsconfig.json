@@ -3,19 +3,19 @@
     "target": "ES6",
     "module": "ES6",
     "moduleResolution": "node",
-    "baseUrl": "./src/index.ts",
-    "outDir": "./lib",
+    "baseUrl": "src",
+    "outDir": "lib",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "declarationDir": "./lib/types"
+    "declarationDir": "lib/types"
   },
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
   },
-  "include": ["./src/**/*.ts", "src/types.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["./node_modules"]
 }

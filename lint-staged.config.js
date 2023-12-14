@@ -1,5 +1,5 @@
 export default {
-  '**/*.ts': [
+  'src/**/*.ts': [
     () => 'tsc -p tsconfig.json --noEmit',
     'eslint',
     'prettier --write',

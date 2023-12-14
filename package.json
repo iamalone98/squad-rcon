@@ -10,8 +10,8 @@
   "scripts": {
     "start": "nodemon src/index.ts",
     "build": "tsc && yarn fix-esm-import-path lib/*.js && rollup -c rollup.config.js",
-    "lint:check": "tsc --noEmit && eslint **/*.ts && prettier **/*.ts --check",
-    "lint:format": "eslint **/*.ts --fix && prettier **/*.ts --write",
+    "lint:check": "tsc --noEmit && eslint --ext .ts src/ && prettier src/ --check --ignore-unknown",
+    "lint:format": "eslint --fix --ext .ts src/ && prettier src/ --write --ignore-unknown",
     "prepare": "husky install"
   },
   "dependencies": {
