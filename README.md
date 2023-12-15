@@ -34,6 +34,7 @@ There are two ways to use the library. This can be done with Promises or EventEm
 import { Rcon, TRconResponse } from 'squad-rcon';
 
 const { rconEmitter, execute } = Rcon({
+  id: 1,
   host: '127.0.0.1',
   port: 1111,
   password: 'qwerty',
@@ -57,6 +58,7 @@ import { RconPromise } from 'squad-rcon';
 (async () => {
   try {
     const { rconEmitter, execute } = await RconPromise({
+      id: 1,
       host: '127.0.0.1',
       port: 1111,
       password: 'qwerty',
@@ -78,6 +80,7 @@ import { RconPromise } from 'squad-rcon';
 import { Rcon } from 'squad-rcon';
 
 Rcon({
+  id: 1,
   host: '127.0.0.1',
   port: 1111,
   password: 'qwerty',

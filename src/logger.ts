@@ -4,16 +4,25 @@ import { CONFIG } from './config';
 export const logger = {
   log: (...text: string[]) => {
     CONFIG.logEnabled &&
-      console.log(chalk.yellow('[SquadRcon]'), chalk.green(text));
+      console.log(
+        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.green(text),
+      );
   },
 
   warn: (...text: string[]) => {
     CONFIG.logEnabled &&
-      console.log(chalk.yellow('[SquadRcon]'), chalk.magenta(text));
+      console.log(
+        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.magenta(text),
+      );
   },
 
   error: (...text: string[]) => {
     CONFIG.logEnabled &&
-      console.log(chalk.yellow('[SquadRcon]'), chalk.red(text));
+      console.log(
+        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.red(text),
+      );
   },
 };

@@ -17,6 +17,7 @@ const PING_PACKET_ID = 102;
 
 export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
   const {
+    id,
     host,
     port,
     password,
@@ -27,6 +28,7 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     chatListeners,
   } = options;
 
+  CONFIG.serverID = id;
   CONFIG.logEnabled =
     typeof logEnabled === 'undefined' ? true : logEnabled;
 

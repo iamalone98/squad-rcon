@@ -1,4 +1,5 @@
 export type TRconOptions = {
+  id: number;
   host: string;
   port: number;
   password: string;
