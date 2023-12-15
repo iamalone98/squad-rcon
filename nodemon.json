@@ -1,6 +1,6 @@
 {
   "ignore": [".git", "node_modules"],
   "events": {
-    "restart": "yarn lint"
+    "restart": "yarn lint:check"
   }
 }
