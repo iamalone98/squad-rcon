@@ -1,14 +1,13 @@
-import { dts } from 'rollup-plugin-dts';
 import typescript from '@rollup/plugin-typescript';
+import { dts } from 'rollup-plugin-dts';
 
 const config = [
   {
-    input: "src/index.ts",
+    input: 'src/index.ts',
     output: {
       dir: 'lib',
-      format: 'cjs'
     },
-    plugins: [typescript()]
+    plugins: [typescript()],
   },
   {
     input: './lib/types/index.d.ts',
