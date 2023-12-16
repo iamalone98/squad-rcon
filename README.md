@@ -104,20 +104,24 @@ Rcon({
 
 #### Functions
 
-| Function           | Return         | Type                     | Emitter             |
-| ------------------ | -------------- | ------------------------ | ------------------- |
-| **client**         | **net.Socket** | `net.Socket`             |                     |
-| **rconEmitter**    | **Emitter**    | `EventEmitter`           | `on()`              |
-| **execute**        | **Promise**    | `Promise<TRconResponse>` | `on('data')`        |
-| **getListPlayers** | **Promise**    | `TListPlayers`           | `on('ListPlayers')` |
-| **getListSquads**  | **Promise**    | `TListSquads`            | `on('ListSquads')`  |
+| Function           | Return         | Type                     | Emitter                |
+| ------------------ | -------------- | ------------------------ | ---------------------- |
+| **client**         | **net.Socket** | `net.Socket`             |                        |
+| **rconEmitter**    | **Emitter**    | `EventEmitter`           | `on()`                 |
+| **execute**        | **Promise**    | `Promise<TRconResponse>` | `on('data')`           |
+| **getListPlayers** | **Promise**    | `TPlayer[]`              | `on('ListPlayers')`    |
+| **getListSquads**  | **Promise**    | `TSquad[]`               | `on('ListSquads')`     |
+| **getCurrentMap**  | **Promise**    | `TMap`                   | `on('ShowCurrentMap')` |
+| **getNextSquads**  | **Promise**    | `TMap`                   | `on('ShowNextMap')`    |
 
 #### Events Emitter
 
 | Event                        | Return       | Type                      |
 | ---------------------------- | ------------ | ------------------------- |
-| **ListPlayers**              | **response** | `TRconResponse`           |
-| **ListSquads**               | **response** | `TRconResponse`           |
+| **ListPlayers**              | **response** | `TPlayer[]`               |
+| **ListSquads**               | **response** | `TSquad[]`                |
+| **ShowCurrentMap**           | **response** | `TMap`                    |
+| **ShowNextMap**              | **response** | `TMap`                    |
 | **CHAT_MESSAGE**             | **response** | `TChatMessage`            |
 | **POSSESSED_ADMIN_CAMERA**   | **response** | `TPossessedAdminCamera`   |
 | **UNPOSSESSED_ADMIN_CAMERA** | **response** | `TUnPossessedAdminCamera` |

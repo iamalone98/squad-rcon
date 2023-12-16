@@ -14,6 +14,10 @@ export const commandParser = (
     case 'ListSquads':
       helpers.getListSquads(rconEmitter, data);
       break;
+    case 'ShowCurrentMap':
+      helpers.getCurrentMap(rconEmitter, data);
+    case 'ShowNextMap':
+      helpers.getNextMap(rconEmitter, data);
     default:
       break;
   }

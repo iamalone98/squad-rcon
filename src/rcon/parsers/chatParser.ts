@@ -29,7 +29,7 @@ export function chatParser(
       chat: matchChat[1],
       eosID: matchChat[2],
       steamID: matchChat[3],
-      playerName: matchChat[4],
+      name: matchChat[4],
       message: matchChat[5],
       time: new Date(),
     };
@@ -49,7 +49,7 @@ export function chatParser(
       raw: body,
       eosID: matchPossessedAdminCam[1],
       steamID: matchPossessedAdminCam[2],
-      playerName: matchPossessedAdminCam[3],
+      name: matchPossessedAdminCam[3],
       time: new Date(),
     };
 
@@ -68,7 +68,7 @@ export function chatParser(
       raw: body,
       eosID: matchUnpossessedAdminCam[1],
       steamID: matchUnpossessedAdminCam[2],
-      playerName: matchUnpossessedAdminCam[3],
+      name: matchUnpossessedAdminCam[3],
       time: new Date(),
     };
 
@@ -85,7 +85,7 @@ export function chatParser(
   if (matchWarn) {
     const data: TPlayerWarned = {
       raw: body,
-      playerName: matchWarn[1],
+      name: matchWarn[1],
       reason: matchWarn[2],
       time: new Date(),
     };
@@ -106,7 +106,7 @@ export function chatParser(
       playerID: matchKick[1],
       eosID: matchKick[2],
       steamID: matchKick[3],
-      playerName: matchKick[4],
+      name: matchKick[4],
       time: new Date(),
     };
 
@@ -125,7 +125,7 @@ export function chatParser(
       raw: body,
       playerID: matchBan[1],
       steamID: matchBan[2],
-      playerName: matchBan[3],
+      name: matchBan[3],
       interval: matchBan[4],
       time: new Date(),
     };
@@ -143,7 +143,7 @@ export function chatParser(
   if (matchSqCreated) {
     const data: TSquadCreated = {
       raw: body,
-      playerName: matchSqCreated[1],
+      name: matchSqCreated[1],
       eosID: matchSqCreated[2],
       steamID: matchSqCreated[3],
       squadID: matchSqCreated[4],

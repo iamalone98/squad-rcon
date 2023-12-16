@@ -1,28 +1,27 @@
 import chalk from 'chalk';
-import { CONFIG } from './config';
 
-export const logger = {
+export const initLogger = (id: number, enabled: boolean) => ({
   log: (...text: string[]) => {
-    CONFIG.logEnabled &&
+    enabled &&
       console.log(
-        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.yellow(`[SquadRcon][${id}]`),
         chalk.green(text),
       );
   },
 
   warn: (...text: string[]) => {
-    CONFIG.logEnabled &&
+    enabled &&
       console.log(
-        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.yellow(`[SquadRcon][${id}]`),
         chalk.magenta(text),
       );
   },
 
   error: (...text: string[]) => {
-    CONFIG.logEnabled &&
+    enabled &&
       console.log(
-        chalk.yellow(`[SquadRcon][${CONFIG.serverID}]`),
+        chalk.yellow(`[SquadRcon][${id}]`),
         chalk.red(text),
       );
   },
-};
+});

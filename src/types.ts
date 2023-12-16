@@ -27,18 +27,18 @@ export type TRconResponse = {
   body: string;
 };
 
-export type TListPlayer = {
+export type TPlayer = {
   playerID: string;
   eosID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   teamID: string;
   squadID: string | null;
   isLeader: boolean;
   role: string;
 };
 
-export type TListSquad = {
+export type TSquad = {
   squadID: string;
   squadName: string;
   size: string;
@@ -55,7 +55,7 @@ export type TChatMessage = {
   chat: string;
   eosID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   message: string;
   time: Date;
 };
@@ -64,7 +64,7 @@ export type TPossessedAdminCamera = {
   raw: string;
   eosID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   time: Date;
 };
 
@@ -72,14 +72,14 @@ export type TUnPossessedAdminCamera = {
   raw: string;
   eosID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   time: Date;
 };
 
 export type TPlayerWarned = {
   raw: string;
   reason: string;
-  playerName: string;
+  name: string;
   time: Date;
 };
 
@@ -88,13 +88,13 @@ export type TPlayerKicked = {
   playerID: string;
   eosID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   time: Date;
 };
 
 export type TSquadCreated = {
   raw: string;
-  playerName: string;
+  name: string;
   eosID: string;
   steamID: string;
   squadID: string;
@@ -107,9 +107,14 @@ export type TPlayerBanned = {
   raw: string;
   playerID: string;
   steamID: string;
-  playerName: string;
+  name: string;
   interval: string;
   time: Date;
+};
+
+export type TMap = {
+  level: string | null;
+  layer: string | null;
 };
 
 export type TResponseTaskQueue = (response: TRconResponse) => void;

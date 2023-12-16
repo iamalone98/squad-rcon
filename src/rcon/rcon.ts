@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import net from 'net';
-import { CONFIG } from '../config';
-import { logger } from '../logger';
+import { initLogger } from '../logger';
 import {
   ERconResponseType,
   TRconOptions,
@@ -28,9 +27,10 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     chatListeners,
   } = options;
 
-  CONFIG.serverID = id;
-  CONFIG.logEnabled =
-    typeof logEnabled === 'undefined' ? true : logEnabled;
+  const logger = initLogger(
+    id,
+    typeof logEnabled === 'undefined' ? true : logEnabled,
+  );
 
   const rconEmitter = new EventEmitter();
   const responseTaskQueue: TResponseTaskQueue[] = [];
@@ -228,6 +228,18 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     return helpers.getListSquads(rconEmitter, response);
   };
 
+  const getCurrentMap = async () => {
+    const response = await execute('ShowCurrentMap');
+
+    return helpers.getCurrentMap(rconEmitter, response);
+  };
+
+  const getNextMap = async () => {
+    const response = await execute('ShowNextMap');
+
+    return helpers.getNextMap(rconEmitter, response);
+  };
+
   client.on('data', onData);
   client.on('close', () => {
     onCloseConnection();
@@ -242,6 +254,8 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     execute,
     getListPlayers,
     getListSquads,
+    getCurrentMap,
+    getNextMap,
     client,
   };
 };
