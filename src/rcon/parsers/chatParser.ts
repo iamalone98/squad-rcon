@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import { RconEvents } from '../../events';
 import {
   TChatListeners,
   TChatMessage,
@@ -33,7 +34,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('CHAT_MESSAGE', data);
+    rconEmitter.emit(RconEvents.CHAT_MESSAGE, data);
     listeners?.onChatMessage?.(data);
 
     return;
@@ -52,7 +53,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('POSSESSED_ADMIN_CAMERA', data);
+    rconEmitter.emit(RconEvents.POSSESSED_ADMIN_CAMERA, data);
     listeners?.onPossessedAdminCamera?.(data);
 
     return;
@@ -71,7 +72,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('UNPOSSESSED_ADMIN_CAMERA', data);
+    rconEmitter.emit(RconEvents.UNPOSSESSED_ADMIN_CAMERA, data);
     listeners?.onUnPossessedAdminCamera?.(data);
 
     return;
@@ -89,7 +90,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('PLAYER_WARNED', data);
+    rconEmitter.emit(RconEvents.PLAYER_WARNED, data);
     listeners?.onPlayerWarned?.(data);
 
     return;
@@ -109,7 +110,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('PLAYER_KICKED', data);
+    rconEmitter.emit(RconEvents.PLAYER_KICKED, data);
     listeners?.onPlayerKicked?.(data);
 
     return;
@@ -129,7 +130,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('PLAYER_BANNED', data);
+    rconEmitter.emit(RconEvents.PLAYER_BANNED, data);
     listeners?.onPlayerBanned?.(data);
 
     return;
@@ -151,7 +152,7 @@ export function chatParser(
       time: new Date(),
     };
 
-    rconEmitter.emit('SQUAD_CREATED', data);
+    rconEmitter.emit(RconEvents.SQUAD_CREATED, data);
     listeners?.onSquadCreated?.(data);
 
     return;
