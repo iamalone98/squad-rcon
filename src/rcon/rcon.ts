@@ -143,6 +143,11 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
         break;
       default:
         {
+          if (
+            decodedData.id === AUTH_PACKET_ID &&
+            decodedData.type === 0
+          )
+            return;
           if (decodedData.id === PING_PACKET_ID) return;
 
           rconEmitter.emit('data', decodedData);
@@ -167,6 +172,20 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
               [lastDataBuffer, data],
               lastDataBuffer.byteLength + data.byteLength,
             );
+            // BAD CODE(SOON FIX)
+            if (
+              decodedData.body.includes(
+                '\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+              )
+            ) {
+              onData(
+                encode(
+                  ERconResponseType.SERVERDATA_RESPONSE,
+                  EMPTY_PACKET_ID,
+                  '',
+                ),
+              );
+            }
           }
         }
         break;

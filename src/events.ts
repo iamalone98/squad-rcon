@@ -6,4 +6,8 @@ export const RconEvents = {
   PLAYER_KICKED: 'PLAYER_KICKED',
   PLAYER_BANNED: 'PLAYER_BANNED',
   SQUAD_CREATED: 'SQUAD_CREATED',
+  LIST_PLAYERS: 'ListPlayers',
+  LIST_SQUADS: 'ListSquads',
+  SHOW_CURRENT_MAP: 'ShowCurrentMap',
+  SHOW_NEXT_MAP: 'ShowNextMap',
 };

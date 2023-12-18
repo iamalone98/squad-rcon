@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import { TPlayer, TRconResponse, TSquad } from '../../types';
+import { RconEvents } from '../../events';
+import { TMap, TPlayer, TRconResponse, TSquad } from '../../types';
 
 const getListPlayers = (
   rconEmitter: EventEmitter,
@@ -25,7 +26,7 @@ const getListPlayers = (
     });
   }
 
-  rconEmitter.emit('ListPlayers', players);
+  rconEmitter.emit(RconEvents.LIST_PLAYERS, players);
 
   return players;
 };
@@ -64,7 +65,7 @@ const getListSquads = (
     });
   }
 
-  rconEmitter.emit('ListSquads', squads);
+  rconEmitter.emit(RconEvents.LIST_SQUADS, squads);
 
   return squads;
 };
@@ -74,16 +75,17 @@ const getCurrentMap = (
   { body }: TRconResponse,
 ) => {
   const match = body.match(/^Current level is (.*), layer is (.*)/);
+  let data: TMap = {
+    level: null,
+    layer: null,
+  };
 
   if (match) {
-    const data = { level: match[1], layer: match[2] };
-
-    rconEmitter.emit('ShowCurrentMap', data);
-
-    return data;
+    data = { level: match[1], layer: match[2] };
   }
 
-  return null;
+  rconEmitter.emit(RconEvents.SHOW_CURRENT_MAP, data);
+  return data;
 };
 
 const getNextMap = (
@@ -91,19 +93,20 @@ const getNextMap = (
   { body }: TRconResponse,
 ) => {
   const match = body.match(/^Next level is (.*), layer is (.*)/);
+  let data: TMap = {
+    level: null,
+    layer: null,
+  };
 
   if (match) {
-    const data = {
+    data = {
       level: match[1] !== '' ? match[1] : null,
       layer: match[2] !== 'To be voted' ? match[2] : null,
     };
-
-    rconEmitter.emit('ShowNextMap', data);
-
-    return data;
   }
 
-  return null;
+  rconEmitter.emit(RconEvents.SHOW_NEXT_MAP, data);
+  return data;
 };
 
 export const helpers = {
