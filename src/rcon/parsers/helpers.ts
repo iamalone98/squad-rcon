@@ -1,11 +1,8 @@
 import EventEmitter from 'events';
 import { RconEvents } from '../../events';
-import { TMap, TPlayer, TRconResponse, TSquad } from '../../types';
+import { TMap, TPlayer, TSquad } from '../../types';
 
-const getListPlayers = (
-  rconEmitter: EventEmitter,
-  { body }: TRconResponse,
-) => {
+const getListPlayers = (rconEmitter: EventEmitter, body: string) => {
   const players: TPlayer[] = [];
 
   for (const line of body.split('\n')) {
@@ -31,10 +28,7 @@ const getListPlayers = (
   return players;
 };
 
-const getListSquads = (
-  rconEmitter: EventEmitter,
-  { body }: TRconResponse,
-) => {
+const getListSquads = (rconEmitter: EventEmitter, body: string) => {
   const squads: TSquad[] = [];
   let teamName: string | null = null;
   let teamID: string | null = null;
@@ -70,10 +64,7 @@ const getListSquads = (
   return squads;
 };
 
-const getCurrentMap = (
-  rconEmitter: EventEmitter,
-  { body }: TRconResponse,
-) => {
+const getCurrentMap = (rconEmitter: EventEmitter, body: string) => {
   const match = body.match(/^Current level is (.*), layer is (.*)/);
   let data: TMap = {
     level: null,
@@ -88,10 +79,7 @@ const getCurrentMap = (
   return data;
 };
 
-const getNextMap = (
-  rconEmitter: EventEmitter,
-  { body }: TRconResponse,
-) => {
+const getNextMap = (rconEmitter: EventEmitter, body: string) => {
   const match = body.match(/^Next level is (.*), layer is (.*)/);
   let data: TMap = {
     level: null,

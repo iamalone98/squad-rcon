@@ -1,6 +1,6 @@
 {
   "name": "squad-rcon",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/iamalone98/squad-rcon.git",

@@ -1,3 +1,8 @@
+/*
+  Packets parser Author: Matttor
+  github: https://github.com/Matttor
+*/
+
 import EventEmitter from 'events';
 import net from 'net';
 import { initLogger } from '../logger';
@@ -8,7 +13,7 @@ import {
   TResponseTaskQueue,
 } from '../types';
 import { chatParser, commandParser, helpers } from './parsers';
-import { decode, encode } from './utils';
+import { encode } from './utils';
 
 const EMPTY_PACKET_ID = 100;
 const AUTH_PACKET_ID = 101;
@@ -43,7 +48,15 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
 
   logger.log('Connecting');
 
+  const soh = {
+    size: 7,
+    id: 0,
+    type: ERconResponseType.SERVERDATA_RESPONSE,
+    body: '',
+  };
+
   let commandId = 0;
+  let responseBody = '';
   let lastDataBuffer = Buffer.alloc(0);
   let connected = false;
   let timerPing: NodeJS.Timeout;
@@ -61,14 +74,16 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
   };
 
   const onConnected = () => {
-    connected = true;
-    rconEmitter.emit('connected');
-    timerPing = setInterval(
-      () => {
-        ping();
-      },
-      pingDelay || 60000 * 2,
-    );
+    if (!connected) {
+      connected = true;
+      rconEmitter.emit('connected');
+      timerPing = setInterval(
+        () => {
+          ping();
+        },
+        pingDelay || 60000 * 2,
+      );
+    }
   };
 
   const onCloseConnection = () => {
@@ -97,102 +112,94 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     clearInterval(timerPing);
   };
 
+  const decode = (): TRconResponse | null => {
+    if (
+      lastDataBuffer[0] === 0 &&
+      lastDataBuffer[1] === 1 &&
+      lastDataBuffer[2] === 0 &&
+      lastDataBuffer[3] === 0 &&
+      lastDataBuffer[4] === 0 &&
+      lastDataBuffer[5] === 0 &&
+      lastDataBuffer[6] === 0
+    ) {
+      lastDataBuffer = lastDataBuffer.subarray(7);
+      return soh;
+    }
+    const bufSize = lastDataBuffer.readInt32LE(0);
+    if (bufSize > 8192 || bufSize < 10) {
+      badPacket();
+      return null;
+    } else if (bufSize <= lastDataBuffer.byteLength - 4) {
+      const bufId = lastDataBuffer.readInt32LE(4);
+      const bufType = lastDataBuffer.readInt32LE(8);
+      if (
+        lastDataBuffer[bufSize + 2] !== 0 ||
+        lastDataBuffer[bufSize + 3] !== 0 ||
+        bufId < 0 ||
+        bufType < 0 ||
+        bufType > 5
+      ) {
+        badPacket();
+        return null;
+      } else {
+        const response = {
+          size: bufSize,
+          id: bufId,
+          type: bufType,
+          body: lastDataBuffer.toString('utf8', 12, bufSize + 2),
+        };
+        lastDataBuffer = lastDataBuffer.subarray(bufSize + 4);
+        return response;
+      }
+    } else return null;
+  };
+
+  const badPacket = () => {
+    logger.error('Bad packet');
+    lastDataBuffer = Buffer.alloc(0);
+    return null;
+  };
+
   const onData = (data: Buffer) => {
-    const decodedData = decode(data);
+    lastDataBuffer = Buffer.concat(
+      [lastDataBuffer, data],
+      lastDataBuffer.byteLength + data.byteLength,
+    );
 
-    switch (decodedData.type) {
-      case ERconResponseType.SERVERDATA_COMMAND:
-        {
-          if (decodedData.id === AUTH_PACKET_ID) {
-            logger.log('Authorization successful');
-            onConnected();
-          } else if (decodedData.id === -1) {
-            logger.error('Authorization failed');
-            reconnect();
-          }
+    while (lastDataBuffer.byteLength >= 7) {
+      const packet = decode();
+      if (!packet) break;
+
+      if (packet.type === ERconResponseType.SERVERDATA_RESPONSE)
+        onResponse(packet);
+      else if (packet.type === ERconResponseType.SERVERDATA_SERVER) {
+        chatParser(rconEmitter, packet, chatListeners);
+        rconEmitter.emit('data', packet);
+      } else if (
+        packet.type === ERconResponseType.SERVERDATA_COMMAND
+      ) {
+        if (packet.id === AUTH_PACKET_ID) {
+          logger.log('Authorization successful');
+          onConnected();
+        } else if (packet.id === -1) {
+          logger.error('Authorization failed');
+          reconnect();
         }
-        break;
-
-      case ERconResponseType.SERVERDATA_SERVER:
-        {
-          if (decodedData.body.includes('\x00')) {
-            onData(
-              encode(
-                ERconResponseType.SERVERDATA_SERVER,
-                0,
-                decodedData.body.slice(
-                  0,
-                  decodedData.body.indexOf('\x00'),
-                ),
-              ),
-            );
-            onData(
-              encode(
-                ERconResponseType.SERVERDATA_SERVER,
-                0,
-                decodedData.body.slice(
-                  decodedData.body.lastIndexOf('\x00') + 1,
-                ),
-              ),
-            );
-          } else {
-            chatParser(rconEmitter, decodedData, chatListeners);
-            rconEmitter.emit('data', decodedData);
-          }
-        }
-        break;
-      default:
-        {
-          if (
-            decodedData.id === AUTH_PACKET_ID &&
-            decodedData.type === 0
-          )
-            return;
-          if (decodedData.id === PING_PACKET_ID) return;
-
-          rconEmitter.emit('data', decodedData);
-
-          if (decodedData.id === EMPTY_PACKET_ID) {
-            if (lastDataBuffer.byteLength >= 1) {
-              const lastDataDecoded = decode(lastDataBuffer);
-
-              commandParser(
-                rconEmitter,
-                lastDataDecoded,
-                lastCommands[0],
-              );
-
-              lastCommands.shift();
-
-              responseTaskQueue.shift()?.(lastDataDecoded);
-              lastDataBuffer = Buffer.alloc(0);
-            }
-          } else {
-            lastDataBuffer = Buffer.concat(
-              [lastDataBuffer, data],
-              lastDataBuffer.byteLength + data.byteLength,
-            );
-            // BAD CODE(SOON FIX)
-            if (
-              decodedData.body.includes(
-                '\x00\x00\x00d\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-              )
-            ) {
-              onData(
-                encode(
-                  ERconResponseType.SERVERDATA_RESPONSE,
-                  EMPTY_PACKET_ID,
-                  '',
-                ),
-              );
-            }
-          }
-        }
-        break;
+      }
     }
   };
 
-  const execute = (command: string): Promise<TRconResponse> => {
+  const onResponse = (packet: TRconResponse) => {
+    if (packet.body === '') {
+      commandParser(rconEmitter, responseBody, lastCommands[0]);
+      responseTaskQueue.shift()?.(responseBody);
+      responseBody = '';
+    } else if (!packet.body.includes('')) {
+      responseBody = responseBody += packet.body;
+    } else badPacket();
+  };
+
+  const execute = (command: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       lastCommands.push(command);
       responseTaskQueue.push((response) => {

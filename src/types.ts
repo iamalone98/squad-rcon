@@ -117,7 +117,7 @@ export type TMap = {
   layer: string | null;
 };
 
-export type TResponseTaskQueue = (response: TRconResponse) => void;
+export type TResponseTaskQueue = (response: string) => void;
 
 export enum ERconResponseType {
   SERVERDATA_AUTH = 0x03,

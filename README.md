@@ -104,15 +104,15 @@ Rcon({
 
 #### Functions
 
-| Function           | Return         | Type                     | Emitter                |
-| ------------------ | -------------- | ------------------------ | ---------------------- |
-| **client**         | **net.Socket** | `net.Socket`             |                        |
-| **rconEmitter**    | **Emitter**    | `EventEmitter`           | `on()`                 |
-| **execute**        | **Promise**    | `Promise<TRconResponse>` | `on('data')`           |
-| **getListPlayers** | **Promise**    | `TPlayer[]`              | `on('ListPlayers')`    |
-| **getListSquads**  | **Promise**    | `TSquad[]`               | `on('ListSquads')`     |
-| **getCurrentMap**  | **Promise**    | `TMap`                   | `on('ShowCurrentMap')` |
-| **getNextSquads**  | **Promise**    | `TMap`                   | `on('ShowNextMap')`    |
+| Function           | Return         | Type              | Emitter                |
+| ------------------ | -------------- | ----------------- | ---------------------- |
+| **client**         | **net.Socket** | `net.Socket`      |                        |
+| **rconEmitter**    | **Emitter**    | `EventEmitter`    | `on()`                 |
+| **execute**        | **Promise**    | `Promise<string>` | `on('data')`           |
+| **getListPlayers** | **Promise**    | `TPlayer[]`       | `on('ListPlayers')`    |
+| **getListSquads**  | **Promise**    | `TSquad[]`        | `on('ListSquads')`     |
+| **getCurrentMap**  | **Promise**    | `TMap`            | `on('ShowCurrentMap')` |
+| **getNextSquads**  | **Promise**    | `TMap`            | `on('ShowNextMap')`    |
 
 #### Events Emitter
 

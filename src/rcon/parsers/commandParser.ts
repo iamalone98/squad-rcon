@@ -1,10 +1,9 @@
 import EventEmitter from 'events';
-import { TRconResponse } from '../../types';
 import { helpers } from './helpers';
 
 export const commandParser = (
   rconEmitter: EventEmitter,
-  data: TRconResponse,
+  data: string,
   command: string,
 ) => {
   switch (command) {
