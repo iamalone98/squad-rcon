@@ -192,6 +192,7 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
   const onResponse = (packet: TRconResponse) => {
     if (packet.body === '') {
       commandParser(rconEmitter, responseBody, lastCommands[0]);
+      lastCommands.shift();
       responseTaskQueue.shift()?.(responseBody);
       responseBody = '';
     } else if (!packet.body.includes('')) {
