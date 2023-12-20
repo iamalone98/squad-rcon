@@ -267,8 +267,17 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     return helpers.getNextMap(rconEmitter, response);
   };
 
+  const close = () =>
+    new Promise((res) => {
+      rconEmitter.on('close', () => res(true));
+      client.end();
+    });
+
   client.on('data', onData);
   client.on('close', () => {
+    onCloseConnection();
+  });
+  client.on('end', () => {
     onCloseConnection();
   });
   client.on('error', (error) => {
@@ -284,5 +293,6 @@ export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
     getCurrentMap,
     getNextMap,
     client,
+    close,
   };
 };

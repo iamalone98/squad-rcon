@@ -106,6 +106,7 @@ Rcon({
 
 | Function           | Return         | Type              | Emitter                |
 | ------------------ | -------------- | ----------------- | ---------------------- |
+| **close**          | **Promise**    | `Promise`         |                        |
 | **client**         | **net.Socket** | `net.Socket`      |                        |
 | **rconEmitter**    | **Emitter**    | `EventEmitter`    | `on()`                 |
 | **execute**        | **Promise**    | `Promise<string>` | `on('data')`           |
