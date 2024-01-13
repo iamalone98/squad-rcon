@@ -249,6 +249,7 @@ export class Rcon extends EventEmitter {
   private onCloseConnection() {
     this.emit('close');
     this.logger.error('Connection close');
+    this.reconnect();
   }
 
   private onErrorConnection(error?: Error) {
