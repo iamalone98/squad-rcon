@@ -1,298 +1,333 @@
-/*
-  Packets parser Author: Matttor
-  github: https://github.com/Matttor
-*/
-
 import EventEmitter from 'events';
 import net from 'net';
 import { initLogger } from '../logger';
 import {
   ERconResponseType,
+  TChatListeners,
   TRconOptions,
   TRconResponse,
   TResponseTaskQueue,
 } from '../types';
 import { chatParser, commandParser, helpers } from './parsers';
-import { encode } from './utils';
 
 const EMPTY_PACKET_ID = 100;
 const AUTH_PACKET_ID = 101;
 const PING_PACKET_ID = 102;
 
-export const Rcon = (options: TRconOptions, _isPromise?: boolean) => {
-  const {
-    id,
-    host,
-    port,
-    password,
-    pingDelay,
-    autoReconnect = true,
-    autoReconnectDelay = 10000,
-    logEnabled,
-    chatListeners,
-  } = options;
+export class Rcon extends EventEmitter {
+  readonly id: number;
+  private client?: net.Socket;
 
-  const logger = initLogger(
-    id,
-    typeof logEnabled === 'undefined' ? true : logEnabled,
-  );
+  private readonly host: string;
+  private readonly port: number;
+  private readonly password: string;
+  private readonly pingDelay?: number;
+  private readonly autoReconnect?: boolean;
+  private readonly autoReconnectDelay?: number;
+  private readonly chatListeners?: TChatListeners;
 
-  const rconEmitter = new EventEmitter();
-  const responseTaskQueue: TResponseTaskQueue[] = [];
-  const lastCommands: string[] = [];
-  const client: net.Socket = net.createConnection({
-    host,
-    port,
-    noDelay: true,
-  });
-
-  logger.log('Connecting');
-
-  const soh = {
+  private readonly soh = {
     size: 7,
     id: 0,
     type: ERconResponseType.SERVERDATA_RESPONSE,
     body: '',
   };
+  private readonly logger: ReturnType<typeof initLogger>;
+  private commandId = 0;
+  private responseBody = '';
+  private connected = false;
+  private lastDataBuffer = Buffer.alloc(0);
+  private timerPing?: NodeJS.Timeout;
+  private responseTaskQueue: TResponseTaskQueue[] = [];
+  private lastCommands: string[] = [];
 
-  let commandId = 0;
-  let responseBody = '';
-  let lastDataBuffer = Buffer.alloc(0);
-  let connected = false;
-  let timerPing: NodeJS.Timeout;
+  constructor(options: TRconOptions) {
+    super();
 
-  const onAuth = () => {
-    logger.log('Authorization in progress');
+    for (const option of ['id', 'host', 'port', 'password'])
+      if (!(option in options))
+        throw new Error(`${option} required!`);
 
-    client.write(
-      encode(
-        ERconResponseType.SERVERDATA_AUTH,
-        AUTH_PACKET_ID,
-        password,
-      ),
+    const {
+      id,
+      host,
+      port,
+      password,
+      pingDelay,
+      autoReconnect = true,
+      autoReconnectDelay = 10000,
+      logEnabled,
+    } = options;
+
+    this.id = id;
+    this.host = host;
+    this.port = port;
+    this.password = password;
+    this.pingDelay = pingDelay;
+    this.autoReconnect = autoReconnect;
+    this.autoReconnectDelay = autoReconnectDelay;
+    this.chatListeners = this.chatListeners;
+    this.logger = initLogger(
+      id,
+      typeof logEnabled === 'undefined' ? true : logEnabled,
     );
-  };
+  }
 
-  const onConnected = () => {
-    if (!connected) {
-      connected = true;
-      rconEmitter.emit('connected');
-      timerPing = setInterval(
-        () => {
-          ping();
-        },
-        pingDelay || 60000 * 2,
-      );
-    }
-  };
+  init() {
+    return new Promise((res, rej) => {
+      this.once('connected', () => res(true));
+      this.once('close', () => rej('Connection error'));
 
-  const onCloseConnection = () => {
-    rconEmitter.emit('close');
-    logger.error('Connection close');
+      this.connect();
+    });
+  }
 
-    reconnect();
-  };
+  close() {
+    return new Promise((res) => {
+      this.once('close', () => res(true));
+      this.client?.end();
+    });
+  }
 
-  const onErrorConnection = (error?: Error) => {
-    rconEmitter.emit('err', error);
-    logger.error('Connection error');
-  };
-
-  const reconnect = () => {
-    connected = false;
-
-    if (autoReconnect && !connected && !_isPromise) {
-      setTimeout(() => {
-        client.end();
-        logger.log('Reconnecting');
-        Rcon(options);
-      }, autoReconnectDelay);
-    }
-
-    clearInterval(timerPing);
-  };
-
-  const decode = (): TRconResponse | null => {
-    if (
-      lastDataBuffer[0] === 0 &&
-      lastDataBuffer[1] === 1 &&
-      lastDataBuffer[2] === 0 &&
-      lastDataBuffer[3] === 0 &&
-      lastDataBuffer[4] === 0 &&
-      lastDataBuffer[5] === 0 &&
-      lastDataBuffer[6] === 0
-    ) {
-      lastDataBuffer = lastDataBuffer.subarray(7);
-      return soh;
-    }
-    const bufSize = lastDataBuffer.readInt32LE(0);
-    if (bufSize > 8192 || bufSize < 10) {
-      badPacket();
-      return null;
-    } else if (bufSize <= lastDataBuffer.byteLength - 4) {
-      const bufId = lastDataBuffer.readInt32LE(4);
-      const bufType = lastDataBuffer.readInt32LE(8);
-      if (
-        lastDataBuffer[bufSize + 2] !== 0 ||
-        lastDataBuffer[bufSize + 3] !== 0 ||
-        bufId < 0 ||
-        bufType < 0 ||
-        bufType > 5
-      ) {
-        badPacket();
-        return null;
-      } else {
-        const response = {
-          size: bufSize,
-          id: bufId,
-          type: bufType,
-          body: lastDataBuffer.toString('utf8', 12, bufSize + 2),
-        };
-        lastDataBuffer = lastDataBuffer.subarray(bufSize + 4);
-        return response;
-      }
-    } else return null;
-  };
-
-  const badPacket = () => {
-    logger.error('Bad packet');
-    lastDataBuffer = Buffer.alloc(0);
-    return null;
-  };
-
-  const onData = (data: Buffer) => {
-    lastDataBuffer = Buffer.concat(
-      [lastDataBuffer, data],
-      lastDataBuffer.byteLength + data.byteLength,
-    );
-
-    while (lastDataBuffer.byteLength >= 7) {
-      const packet = decode();
-      if (!packet) break;
-
-      if (packet.type === ERconResponseType.SERVERDATA_RESPONSE)
-        onResponse(packet);
-      else if (packet.type === ERconResponseType.SERVERDATA_SERVER) {
-        chatParser(rconEmitter, packet, chatListeners);
-        rconEmitter.emit('data', packet);
-      } else if (
-        packet.type === ERconResponseType.SERVERDATA_COMMAND
-      ) {
-        if (packet.id === AUTH_PACKET_ID) {
-          logger.log('Authorization successful');
-          onConnected();
-        } else if (packet.id === -1) {
-          logger.error('Authorization failed');
-          reconnect();
-        }
-      }
-    }
-  };
-
-  const onResponse = (packet: TRconResponse) => {
-    if (packet.body === '') {
-      commandParser(rconEmitter, responseBody, lastCommands[0]);
-      lastCommands.shift();
-      responseTaskQueue.shift()?.(responseBody);
-      responseBody = '';
-    } else if (!packet.body.includes('')) {
-      responseBody = responseBody += packet.body;
-    } else badPacket();
-  };
-
-  const execute = (command: string): Promise<string> => {
+  execute(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      lastCommands.push(command);
-      responseTaskQueue.push((response) => {
-        if (!connected) {
+      this.lastCommands.push(command);
+      this.responseTaskQueue.push((response) => {
+        if (!this.connected) {
           reject();
         }
 
         resolve(response);
       });
 
-      commandId = commandId >= 80 ? 1 : commandId + 1;
+      this.commandId = this.commandId >= 80 ? 1 : this.commandId + 1;
 
-      client.write(
-        encode(
+      this.client?.write(
+        this.encode(
           ERconResponseType.SERVERDATA_COMMAND,
-          commandId,
+          this.commandId,
           command,
         ),
       );
 
-      client.write(
-        encode(
+      this.client?.write(
+        this.encode(
           ERconResponseType.SERVERDATA_COMMAND,
           EMPTY_PACKET_ID,
           '',
         ),
       );
     });
+  }
+
+  async getListPlayers() {
+    const response = await this.execute('ListPlayers');
+
+    return helpers.getListPlayers(this, response);
+  }
+
+  async getListSquads() {
+    const response = await this.execute('ListSquads');
+
+    return helpers.getListSquads(this, response);
+  }
+
+  async getCurrentMap() {
+    const response = await this.execute('ShowCurrentMap');
+
+    return helpers.getCurrentMap(this, response);
+  }
+
+  async getNextMap() {
+    const response = await this.execute('ShowNextMap');
+
+    return helpers.getNextMap(this, response);
+  }
+
+  private connect() {
+    this.client = net.createConnection({
+      host: this.host,
+      port: this.port,
+      noDelay: true,
+    });
+
+    this.logger.log('Connecting');
+
+    this.client.on('data', (data) => {
+      this.onData(data);
+    });
+    this.client.on('close', () => {
+      this.onCloseConnection();
+    });
+    this.client.on('error', (error) => {
+      this.onErrorConnection(error);
+    });
+    this.client.once('ready', () => {
+      this.onAuth();
+    });
+  }
+
+  private reconnect() {
+    this.connected = false;
+
+    if (this.autoReconnect && !this.connected) {
+      setTimeout(() => {
+        this.client?.end();
+        this.logger.log('Reconnecting');
+        this.connect();
+      }, this.autoReconnectDelay);
+    }
+
+    clearInterval(this.timerPing);
+  }
+
+  private onData(data: Buffer) {
+    this.lastDataBuffer = Buffer.concat(
+      [this.lastDataBuffer, data],
+      this.lastDataBuffer.byteLength + data.byteLength,
+    );
+
+    while (this.lastDataBuffer.byteLength >= 7) {
+      const packet = this.decode();
+      if (!packet) break;
+
+      if (packet.type === ERconResponseType.SERVERDATA_RESPONSE)
+        this.onResponse(packet);
+      else if (packet.type === ERconResponseType.SERVERDATA_SERVER) {
+        chatParser(this, packet, this.chatListeners);
+        this.emit('data', packet);
+      } else if (
+        packet.type === ERconResponseType.SERVERDATA_COMMAND
+      ) {
+        if (packet.id === AUTH_PACKET_ID) {
+          this.logger.log('Authorization successful');
+          this.onConnected();
+        } else if (packet.id === -1) {
+          this.logger.error('Authorization failed');
+          this.reconnect();
+        }
+      }
+    }
+  }
+
+  private onResponse(packet: TRconResponse) {
+    if (packet.body === '') {
+      commandParser(this, this.responseBody, this.lastCommands[0]);
+      this.lastCommands.shift();
+      this.responseTaskQueue.shift()?.(this.responseBody);
+      this.responseBody = '';
+    } else if (!packet.body.includes('')) {
+      this.responseBody = this.responseBody += packet.body;
+    } else this.badPacket();
+  }
+
+  private onConnected() {
+    if (!this.connected) {
+      this.connected = true;
+      this.emit('connected');
+      this.timerPing = setInterval(
+        () => {
+          this.ping();
+        },
+        this.pingDelay || 60000 * 2,
+      );
+    }
+  }
+
+  private onAuth() {
+    this.logger.log('Authorization in progress');
+
+    this.client?.write(
+      this.encode(
+        ERconResponseType.SERVERDATA_AUTH,
+        AUTH_PACKET_ID,
+        this.password,
+      ),
+    );
+  }
+
+  private onCloseConnection() {
+    this.emit('close');
+    this.logger.error('Connection close');
+  }
+
+  private onErrorConnection(error?: Error) {
+    this.emit('err', error);
+    this.logger.error('Connection error');
+  }
+
+  private encode = (type: number, id: number, body: string) => {
+    const size = Buffer.byteLength(body) + 14;
+    const buf = Buffer.alloc(size);
+
+    buf.writeInt32LE(size - 4, 0);
+    buf.writeInt32LE(id, 4);
+    buf.writeInt32LE(type, 8);
+    buf.write(body, 12, size - 2, 'utf-8');
+    buf.writeInt16LE(0, size - 2);
+
+    return buf;
   };
 
-  const ping = () => {
-    logger.log('Ping connection');
+  private decode(): TRconResponse | null {
+    if (
+      this.lastDataBuffer[0] === 0 &&
+      this.lastDataBuffer[1] === 1 &&
+      this.lastDataBuffer[2] === 0 &&
+      this.lastDataBuffer[3] === 0 &&
+      this.lastDataBuffer[4] === 0 &&
+      this.lastDataBuffer[5] === 0 &&
+      this.lastDataBuffer[6] === 0
+    ) {
+      this.lastDataBuffer = this.lastDataBuffer.subarray(7);
+      return this.soh;
+    }
+    const bufSize = this.lastDataBuffer.readInt32LE(0);
+    if (bufSize > 8192 || bufSize < 10) {
+      this.badPacket();
+      return null;
+    } else if (bufSize <= this.lastDataBuffer.byteLength - 4) {
+      const bufId = this.lastDataBuffer.readInt32LE(4);
+      const bufType = this.lastDataBuffer.readInt32LE(8);
+      if (
+        this.lastDataBuffer[bufSize + 2] !== 0 ||
+        this.lastDataBuffer[bufSize + 3] !== 0 ||
+        bufId < 0 ||
+        bufType < 0 ||
+        bufType > 5
+      ) {
+        this.badPacket();
+        return null;
+      } else {
+        const response = {
+          size: bufSize,
+          id: bufId,
+          type: bufType,
+          body: this.lastDataBuffer.toString('utf8', 12, bufSize + 2),
+        };
+        this.lastDataBuffer = this.lastDataBuffer.subarray(
+          bufSize + 4,
+        );
+        return response;
+      }
+    } else return null;
+  }
 
-    client.write(
-      encode(
+  private badPacket() {
+    this.logger.error('Bad packet');
+    this.lastDataBuffer = Buffer.alloc(0);
+    return null;
+  }
+
+  private ping() {
+    this.logger.log('Ping connection');
+
+    this.client?.write(
+      this.encode(
         ERconResponseType.SERVERDATA_COMMAND,
         PING_PACKET_ID,
         '',
       ),
     );
-  };
-
-  const getListPlayers = async () => {
-    const response = await execute('ListPlayers');
-
-    return helpers.getListPlayers(rconEmitter, response);
-  };
-
-  const getListSquads = async () => {
-    const response = await execute('ListSquads');
-
-    return helpers.getListSquads(rconEmitter, response);
-  };
-
-  const getCurrentMap = async () => {
-    const response = await execute('ShowCurrentMap');
-
-    return helpers.getCurrentMap(rconEmitter, response);
-  };
-
-  const getNextMap = async () => {
-    const response = await execute('ShowNextMap');
-
-    return helpers.getNextMap(rconEmitter, response);
-  };
-
-  const close = () =>
-    new Promise((res) => {
-      rconEmitter.on('close', () => res(true));
-      client.end();
-    });
-
-  client.on('data', onData);
-  client.on('close', () => {
-    onCloseConnection();
-  });
-  client.on('end', () => {
-    onCloseConnection();
-  });
-  client.on('error', (error) => {
-    onErrorConnection(error);
-  });
-  client.once('ready', onAuth);
-
-  return {
-    rconEmitter,
-    execute,
-    getListPlayers,
-    getListSquads,
-    getCurrentMap,
-    getNextMap,
-    client,
-    close,
-  };
-};
+  }
+}

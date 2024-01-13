@@ -26,46 +26,25 @@ $ yarn add squad-rcon
 
 ## Quick Start
 
-There are two ways to use the library. This can be done with Promises or EventEmitter, and you can combine them.
-
-### EventEmmiter(ts)
-
 ```typescript
-import { Rcon, TRconResponse } from 'squad-rcon';
-
-const { rconEmitter, execute } = Rcon({
-  id: 1,
-  host: '127.0.0.1',
-  port: 1111,
-  password: 'qwerty',
-});
-
-rconEmitter.on('connected', () => {
-  console.log('connect');
-  execute('ListPlayers');
-});
-
-rconEmitter.on('data', (data: TRconResponse) => {
-  console.log(data);
-});
-```
-
-### Promise(ts)
-
-```typescript
-import { RconPromise } from 'squad-rcon';
+import { Rcon } from 'squad-rcon';
 
 (async () => {
   try {
-    const { rconEmitter, execute } = await RconPromise({
+    const rcon = await Rcon({
       id: 1,
       host: '127.0.0.1',
       port: 1111,
       password: 'qwerty',
     });
 
-    const res = await execute('ListPlayers');
-    console.log(res);
+    await rcon.init();
+
+    rcon.on('ListPlayers', (data) => {
+      console.log(data);
+    });
+
+    rcon.execute('ListPlayers');
   } catch (e: unknown) {
     console.log(e);
   }
@@ -100,20 +79,20 @@ Rcon({
 });
 ```
 
-`Rcon` and `RconPromise` return some pre-defined functions:
+`Rcon` return some pre-defined functions:
 
 #### Functions
 
-| Function           | Return         | Type              | Emitter                |
-| ------------------ | -------------- | ----------------- | ---------------------- |
-| **close**          | **Promise**    | `Promise`         |                        |
-| **client**         | **net.Socket** | `net.Socket`      |                        |
-| **rconEmitter**    | **Emitter**    | `EventEmitter`    | `on()`                 |
-| **execute**        | **Promise**    | `Promise<string>` | `on('data')`           |
-| **getListPlayers** | **Promise**    | `TPlayer[]`       | `on('ListPlayers')`    |
-| **getListSquads**  | **Promise**    | `TSquad[]`        | `on('ListSquads')`     |
-| **getCurrentMap**  | **Promise**    | `TMap`            | `on('ShowCurrentMap')` |
-| **getNextSquads**  | **Promise**    | `TMap`            | `on('ShowNextMap')`    |
+| Function           | Return      | Type              | Emitter                |
+| ------------------ | ----------- | ----------------- | ---------------------- |
+| **init**           | **Promise** | `Promise`         |                        |
+| **close**          | **Promise** | `Promise`         |                        |
+| **rconEmitter**    | **Emitter** | `EventEmitter`    | `on()`                 |
+| **execute**        | **Promise** | `Promise<string>` | `on('data')`           |
+| **getListPlayers** | **Promise** | `TPlayer[]`       | `on('ListPlayers')`    |
+| **getListSquads**  | **Promise** | `TSquad[]`        | `on('ListSquads')`     |
+| **getCurrentMap**  | **Promise** | `TMap`            | `on('ShowCurrentMap')` |
+| **getNextSquads**  | **Promise** | `TMap`            | `on('ShowNextMap')`    |
 
 #### Events Emitter
 
