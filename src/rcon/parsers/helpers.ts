@@ -98,7 +98,7 @@ const getNextMap = (rconEmitter: EventEmitter, body: string) => {
 };
 
 const getServerInfo = (rconEmitter: EventEmitter, body: string) => {
-  const res = body && JSON.parse(body);
+  const res = body && body.length && JSON.parse(body);
   const data: TServerInfo = {
     serverName: res?.ServerName_s || '',
     maxPlayers: parseInt(res?.MaxPlayers || 0),
