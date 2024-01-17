@@ -10,4 +10,5 @@ export const RconEvents = {
   LIST_SQUADS: 'ListSquads',
   SHOW_CURRENT_MAP: 'ShowCurrentMap',
   SHOW_NEXT_MAP: 'ShowNextMap',
+  SHOW_SERVER_INFO: 'ShowServerInfo',
 };

@@ -117,6 +117,24 @@ export type TMap = {
   layer: string | null;
 };
 
+export type TServerInfo = {
+  serverName: string;
+  maxPlayers: number;
+  publicQueueLimit: number;
+  reserveSlots: number;
+  playerCount: number;
+  a2sPlayerCount: number;
+  publicQueue: number;
+  reserveQueue: number;
+  currentLayer: string;
+  nextLayer: string;
+  teamOne: string;
+  teamTwo: string;
+  matchTimeout: number;
+  matchStartTime: number;
+  gameVersion: string;
+};
+
 export type TResponseTaskQueue = (response: string) => void;
 
 export enum ERconResponseType {

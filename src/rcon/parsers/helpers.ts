@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { RconEvents } from '../../events';
-import { TMap, TPlayer, TSquad } from '../../types';
+import { TMap, TPlayer, TServerInfo, TSquad } from '../../types';
 
 const getListPlayers = (rconEmitter: EventEmitter, body: string) => {
   const players: TPlayer[] = [];
@@ -97,9 +97,39 @@ const getNextMap = (rconEmitter: EventEmitter, body: string) => {
   return data;
 };
 
+const getServerInfo = (rconEmitter: EventEmitter, body: string) => {
+  const res = body && JSON.parse(body);
+  const data: TServerInfo = {
+    serverName: res?.ServerName_s || '',
+    maxPlayers: parseInt(res?.MaxPlayers || 0),
+    publicQueueLimit: parseInt(res?.PublicQueueLimit_I || 0),
+    reserveSlots: parseInt(res?.PlayerReserveCount_I || 0),
+    playerCount: parseInt(res?.PlayerCount_I || 0),
+    a2sPlayerCount: parseInt(res?.PlayerCount_I || 0),
+    publicQueue: parseInt(res?.PublicQueue_I || 0),
+    reserveQueue: parseInt(res?.ReservedQueue_I || 0),
+    currentLayer: res?.MapName_s || '',
+    nextLayer: res?.NextLayer_s || '',
+    teamOne:
+      res?.TeamOne_s?.replace(new RegExp(res?.MapName_s, 'i'), '') ||
+      '',
+    teamTwo:
+      res?.TeamTwo_s?.replace(new RegExp(res?.MapName_s, 'i'), '') ||
+      '',
+    matchTimeout: parseInt(res?.MatchTimeout_d || 0),
+    matchStartTime: parseInt(res?.PLAYTIME_I || 0),
+    gameVersion: res?.GameVersion_s || '',
+  };
+
+  rconEmitter.emit(RconEvents.SHOW_SERVER_INFO, data);
+
+  return data;
+};
+
 export const helpers = {
   getListPlayers,
   getListSquads,
   getCurrentMap,
   getNextMap,
+  getServerInfo,
 };

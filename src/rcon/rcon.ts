@@ -144,6 +144,12 @@ export class Rcon extends EventEmitter {
     return helpers.getNextMap(this, response);
   }
 
+  async getServerInfo() {
+    const response = await this.execute('ShowServerInfo');
+
+    return helpers.getServerInfo(this, response);
+  }
+
   private connect() {
     this.client = net.createConnection({
       host: this.host,

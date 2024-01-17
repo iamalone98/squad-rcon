@@ -17,6 +17,8 @@ export const commandParser = (
       helpers.getCurrentMap(rconEmitter, data);
     case 'ShowNextMap':
       helpers.getNextMap(rconEmitter, data);
+    case 'ShowServerInfo':
+      helpers.getServerInfo(rconEmitter, data);
     default:
       break;
   }
