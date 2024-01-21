@@ -31,7 +31,7 @@ import { Rcon } from 'squad-rcon';
 
 (async () => {
   try {
-    const rcon = await Rcon({
+    const rcon = Rcon({
       id: 1,
       host: '127.0.0.1',
       port: 1111,
