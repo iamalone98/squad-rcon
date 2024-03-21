@@ -12,7 +12,6 @@ import { chatParser, commandParser, helpers } from './parsers';
 
 const EMPTY_PACKET_ID = 100;
 const AUTH_PACKET_ID = 101;
-const PING_PACKET_ID = 102;
 
 export class Rcon extends EventEmitter {
   readonly id: number;
@@ -329,12 +328,6 @@ export class Rcon extends EventEmitter {
   private ping() {
     this.logger.log('Ping connection');
 
-    this.client?.write(
-      this.encode(
-        ERconResponseType.SERVERDATA_COMMAND,
-        PING_PACKET_ID,
-        '',
-      ),
-    );
+    this.execute('PING_CONNECTION');
   }
 }
