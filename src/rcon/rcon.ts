@@ -150,6 +150,9 @@ export class Rcon extends EventEmitter {
   }
 
   private connect() {
+    this.lastCommands = [];
+    this.responseTaskQueue = [];
+
     this.client = net.createConnection({
       host: this.host,
       port: this.port,
